@@ -1,60 +1,71 @@
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.io.*;
-import java.util.Scanner;
+import java.awt.EventQueue;
 
 import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-
+import java.awt.TextArea;
+import javax.swing.JTextField;
+import java.awt.Button;
+import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class console {
-	
-	public console() {
-		
+
+	private JFrame frame;
+	private JTextField txtCommandline;
+
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					console window = new console();
+					window.frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
 	}
 
-	public static void main(String[] Args) {
-		/*Process p;
-		try {
-			p = Runtime.getRuntime().exec("cmd /c start cmd.exe");
-			p.waitFor();
-		} catch (IOException | InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
-		
-		/*
-		Scanner scan = new Scanner(System.in);
-		String s = scan.next();
-		int i = scan.nextInt();*/
-		
-		
-		JFrame frame = new JFrame("finestra bella");
-		frame.setAutoRequestFocus(false);
-		frame.setVisible(true);
-		frame.setResizable(false);
+	/**
+	 * Create the application.
+	 */
+	public console() {
+		initialize();
+	}
+
+	/**
+	 * Initialize the contents of the frame.
+	 */
+	private void initialize() {
+		frame = new JFrame("MusicApp console manager");
 		frame.setBounds(100, 100, 450, 300);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
-		Container c = frame.getContentPane();
+		TextArea textArea = new TextArea();
+		textArea.setEditable(false);
+		textArea.setBounds(10, 10, 414, 167);
+		frame.getContentPane().add(textArea);
 		
-		JTextArea textArea = new JTextArea(50, 10);
-		c.add(textArea);
-		PrintStream printStream = new PrintStream(new CustomOutputStream(textArea));
-		System.setOut(printStream);
-		System.setErr(printStream);
+		txtCommandline = new JTextField();
+		txtCommandline.setBounds(10, 183, 270, 20);
+		frame.getContentPane().add(txtCommandline);
+		txtCommandline.setColumns(10);
 		
+		JButton btnStopserver = new JButton("stopServer");
+		btnStopserver.setBounds(300, 217, 114, 23);
+		frame.getContentPane().add(btnStopserver);
 		
-		Scanner scan = new Scanner(System.in);
-		String s = scan.next();
-		int i = scan.nextInt();
-
-		System.out.println(s);
-		System.out.println(i);
+		JButton btnStartserver = new JButton("startServer");
+		btnStartserver.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				textArea.append("that's the number: " + Math.random() + "\n");
+			}
+		});
+		btnStartserver.setBounds(300, 183, 114, 23);
+		frame.getContentPane().add(btnStartserver);
 	}
-	
-	
 }
