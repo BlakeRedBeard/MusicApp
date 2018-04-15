@@ -10,7 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
-public class console {
+public class Console {
 
 	private JFrame frame;
 	private JTextField txtCommandline;
@@ -22,7 +22,7 @@ public class console {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					console window = new console();
+					Console window = new Console();
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -34,7 +34,7 @@ public class console {
 	/**
 	 * Create the application.
 	 */
-	public console() {
+	public Console() {
 		initialize();
 	}
 

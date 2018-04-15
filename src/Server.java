@@ -2,13 +2,13 @@ import java.io.*;
 import java.net.*;
 
 
-public class server {
+public class Server {
 
 	private Socket connection;
 	private ServerSocket serverSocket;
 	private int port;
 	
-	public server() {
+	public Server() {
 		this.connection = null;
 		this.port = 2440;
 		
@@ -17,7 +17,7 @@ public class server {
 	
 	
 	
-	public server(int port) {
+	public Server(int port) {
 		this.connection = null;
 		this.port = port;
 		
