@@ -1,15 +1,15 @@
 import java.util.ArrayList;
 
+
 public class Node {
 	 
 	 private ArrayList<Node> sons;   //array contenente i nodi figli, essi fanno parte tutti dello stesso livello
-	 private ArrayList<String> sonsName;
 	 private Node father;			 //nodo padre, nel caso del primo nodo esso avrà valore nullo
 	 private String path, name;		 //le informazioni che si vogliono salvare nel nodo
 	 private String primaryKey;		 //l'attributo è composto dal tipo della PK seguito dal valore (es: int;5)
 	 
 	 public Node() {
-		 this.sons = null;
+		 this.sons = new ArrayList<Node>();
 		 this.setFather(null);
 		 this.setPath(null);
 		 this.setName(null);
@@ -17,7 +17,7 @@ public class Node {
 	 }
 	 
 	 public Node(Node father, String path, String name, String primaryKey) {
-		 this.sons = null;
+		 this.sons = new ArrayList<Node>();
 		 this.setFather(father);
 		 this.setPath(path);
 		 this.setName(name);
@@ -69,12 +69,10 @@ public class Node {
 	
 	public void addSon(String path, String name, String primaryKey) {
 		this.sons.add(new Node(this, path, name, primaryKey));
-		this.sonsName.add(name);
 	}
 	
-	public ArrayList<String> getSonsName(){
-		this.sons.
-		return this.sonsName;
+	public ArrayList<Node> getSons(){
+		return this.sons;
 	}
 	
 	

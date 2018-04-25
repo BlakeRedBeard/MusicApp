@@ -7,10 +7,10 @@ public class ProvaJDBC {
 		try {
 			String driver = "com.mysql.cj.jdbc.Driver";
 			Class.forName(driver);
-			String url = "jdbc:mysql://localhost/ricettario?serverTimezone=GMT";
+			String url = "jdbc:mysql://localhost/mmdb?serverTimezone=GMT";
 			Connection con = DriverManager.getConnection(url, "root", "");
 			Statement cmd = con.createStatement();
-			String query = "SELECT codice, nome FROM ricetta";
+			String query = "SELECT codice, nome FROM autore";
 			ResultSet res = cmd.executeQuery(query);
 			while (res.next()) {
 				System.out.print(res.getString("codice")+"; ");

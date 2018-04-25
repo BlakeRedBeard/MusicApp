@@ -35,7 +35,9 @@ public class DatabaseManager {
 			this.password = password;
 		}
 
-		
+		public Connection getConnection() {
+			return this.connection;
+		}
 		//establish the connection to the specified, in the attributes, 
 		//database and saves the object, still in the attributes of the class's object
 		//returns true, if the connection is set, or returns false if there was an error
@@ -91,6 +93,7 @@ public class DatabaseManager {
 		public ResultSet select(String query) throws SQLException {
 			Statement statement = this.connection.createStatement();
 			ResultSet result = statement.executeQuery(query);
+			
 			return result;
 		}
 		
@@ -98,6 +101,7 @@ public class DatabaseManager {
 		public ResultSet select(Connection conn, String query) throws SQLException {
 			Statement statement = conn.createStatement();
 			ResultSet result = statement.executeQuery(query);
+			
 			return result;
 		}
 				
@@ -147,7 +151,7 @@ public class DatabaseManager {
 			}
 			
 			prStatement.executeUpdate();
-			
+			prStatement.close();
 			return true;
 		}
 		
@@ -187,7 +191,7 @@ public class DatabaseManager {
 			}
 			
 			prStatement.executeUpdate();
-			
+			prStatement.close();
 			return true;
 		}
 		
