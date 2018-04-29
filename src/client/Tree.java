@@ -1,9 +1,11 @@
+package client;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
 import client.Node;
 //TODO CANCEL, WHEN FINISHED, THE UNUSED IMPORTS
+//TODO cancel the class from here and then replace it's calls into client
 public class Tree {
 	
 	private Node menu;
@@ -141,11 +143,13 @@ public class Tree {
 							if(track.equals(this.menu.getSons().get(i).getSons().get(j).getSons().get(z).getName()))
 							{
 								String[] albums = new String[this.menu.getSons().get(i).getSons().size()];
+								
 								for(int y=0; y<this.menu.getSons().get(i).getSons().size(); y++)
 								{
 									albums[y] = this.menu.getSons().get(i).getSons().get(y).getName();
 								}
 								return albums;
+								
 							}
 						}
 					}
