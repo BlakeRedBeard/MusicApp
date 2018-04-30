@@ -13,6 +13,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.StringTokenizer;
 
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
@@ -171,6 +172,19 @@ public class client {
 	
 	
 	private void StartClient() {
+
+		try {
+			this.connection = new Socket(this.server, this.port);
+			System.out.println("connessione stabilita...");
+
+		} catch (IOException e) {
+			System.out.println(e);
+			System.exit(-1); // termina il programma restituendo un errore
+		}
+
+	}
+	
+	private String[] getArtists() {
 		InputStreamReader sender, // Stream di input da tastiera
 				receiver; // Stream di input dal server
 
@@ -180,21 +194,104 @@ public class client {
 		OutputStream out; // stream di connessione con il server
 
 		PrintWriter printer;
-		String msgDaInviare;
-		String msgRicevuto;
+		String message;
 		
-		try
-		{
-			this.connection = new Socket(this.server, this.port);
-			System.out.println("connessione stabilita, scrivere il nome da cercare nella rubrica...");
+		try {
+			receiver = new InputStreamReader(this.connection.getInputStream());
+			server = new BufferedReader(receiver);
 			
+			out = this.connection.getOutputStream();
+			printer = new PrintWriter(out);
+			
+			printer.println("getArtists;");
+			printer.flush();
+			message = server.readLine();
+			StringTokenizer stkn = new StringTokenizer(message, ";");
+			String[] result = new String[stkn.countTokens()];
+			
+			for(int i=0; stkn.hasMoreTokens(); i++)
+				result[i] = stkn.nextToken();
+			
+			return result;
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		catch(IOException e)
-		{
-			System.out.println(e);
-			System.exit(-1);		//termina il programma restituendo un errore
+		return null;
+	}
+	
+	private String[] getAlbums(String artist) {
+		InputStreamReader sender, // Stream di input da tastiera
+				receiver; // Stream di input dal server
+
+		BufferedReader keyboard, // buffer per l'input da tastiera
+				server; // buffer per lo stream del server
+
+		OutputStream out; // stream di connessione con il server
+
+		PrintWriter printer;
+		String message;
+		
+		try {
+			receiver = new InputStreamReader(this.connection.getInputStream());
+			server = new BufferedReader(receiver);
+			
+			out = this.connection.getOutputStream();
+			printer = new PrintWriter(out);
+			
+			printer.println("getAlbums;"+artist);
+			printer.flush();
+			message = server.readLine();
+			StringTokenizer stkn = new StringTokenizer(message, ";");
+			String[] result = new String[stkn.countTokens()];
+			
+			for(int i=0; stkn.hasMoreTokens(); i++)
+				result[i] = stkn.nextToken();
+			
+			return result;
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		return null;
+	}
+	
+	private String[] getTracks(String album) {
+		InputStreamReader sender, // Stream di input da tastiera
+				receiver; // Stream di input dal server
+
+		BufferedReader keyboard, // buffer per l'input da tastiera
+				server; // buffer per lo stream del server
+
+		OutputStream out; // stream di connessione con il server
+
+		PrintWriter printer;
+		String message;
 		
-		
+		try {
+			receiver = new InputStreamReader(this.connection.getInputStream());
+			server = new BufferedReader(receiver);
+			
+			out = this.connection.getOutputStream();
+			printer = new PrintWriter(out);
+			
+			printer.println("getTracks;"+album);
+			printer.flush();
+			message = server.readLine();
+			StringTokenizer stkn = new StringTokenizer(message, ";");
+			String[] result = new String[stkn.countTokens()];
+			
+			for(int i=0; stkn.hasMoreTokens(); i++)
+				result[i] = stkn.nextToken();
+			
+			return result;
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 }
