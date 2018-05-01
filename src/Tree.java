@@ -2,7 +2,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import client.Node;
+
 //TODO CANCEL, WHEN FINISHED, THE UNUSED IMPORTS
 public class Tree {
 	
@@ -80,14 +80,14 @@ public class Tree {
 		}
 	}
 	//returns a string array of the artists names
-	public String[] getArtists() {
+	public String getArtists() {
 
 		if (!this.menu.getSons().isEmpty() || this.menu.getSons() != null) {
 			ArrayList<Node> artists = this.menu.getSons();
-			String[] artisti = new String[artists.size()];
+			String artisti = "";
 
 			for (int i = 0; i < artists.size(); i++)
-				artisti[i] = artists.get(i).getName();
+				artisti += artists.get(i).getName()+";";
 
 			return artisti;
 		}
@@ -96,14 +96,14 @@ public class Tree {
 	}
 
 	// returns a string array of the albums names of the specified artist
-	public String[] getAlbums(String artist) {
+	public String getAlbums(String artist) {
 
 		if (!this.menu.getSons().isEmpty() || this.menu.getSons() != null) {
 			for (int i = 0; i < this.menu.getSons().size(); i++) {
 				if (artist.equals(this.menu.getSons().get(i).getName())) {
-					String[] albums = new String[this.menu.getSons().get(i).getSons().size()];
+					String albums = "";
 					for (int j = 0; j < this.menu.getSons().get(i).getSons().size(); j++)
-						albums[j] = this.menu.getSons().get(i).getSons().get(j).getName();
+						albums += this.menu.getSons().get(i).getSons().get(j).getName()+";";
 					return albums;
 				}
 
@@ -114,14 +114,14 @@ public class Tree {
 	}
 
 	// returns a string array of the tracks of the specified album
-	public String[] getTracks(String album) {
+	public String getTracks(String album) {
 		if (!this.menu.getSons().isEmpty() || this.menu.getSons() != null) {
 			for (int i = 0; i < this.menu.getSons().size(); i++) {
 				for (int j = 0; j < this.menu.getSons().get(i).getSons().size(); j++) {
 					if (album.equals(this.menu.getSons().get(i).getSons().get(j).getName())) {
-						String[] tracks = new String[this.menu.getSons().get(i).getSons().get(j).getSons().size()];
+						String tracks = "";
 						for (int z = 0; z < this.menu.getSons().get(i).getSons().get(j).getSons().size(); z++) {
-							tracks[z] = this.menu.getSons().get(i).getSons().get(j).getSons().get(z).getName();
+							tracks += this.menu.getSons().get(i).getSons().get(j).getSons().get(z).getName()+";";
 						}
 						return tracks;
 					}
@@ -133,17 +133,17 @@ public class Tree {
 	}
 	
 	// returns a string array of the tracks of the specified album
-		public String[] backAlbums(String track) {
+		public String backAlbums(String track) {
 			if (!this.menu.getSons().isEmpty() || this.menu.getSons() != null) {
 				for (int i = 0; i < this.menu.getSons().size(); i++) {
 					for (int j = 0; j < this.menu.getSons().get(i).getSons().size(); j++) {
 						for (int z=0; z<this.menu.getSons().get(i).getSons().get(j).getSons().size(); z++) {
 							if(track.equals(this.menu.getSons().get(i).getSons().get(j).getSons().get(z).getName()))
 							{
-								String[] albums = new String[this.menu.getSons().get(i).getSons().size()];
+								String albums = "";
 								for(int y=0; y<this.menu.getSons().get(i).getSons().size(); y++)
 								{
-									albums[y] = this.menu.getSons().get(i).getSons().get(y).getName();
+									albums = this.menu.getSons().get(i).getSons().get(y).getName()+";";
 								}
 								return albums;
 							}

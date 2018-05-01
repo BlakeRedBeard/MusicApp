@@ -13,6 +13,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.StringTokenizer;
 
 import javax.swing.JButton;
@@ -25,7 +26,6 @@ public class client {
 	private Socket connection;
 	private String server;
 	private int port;
-	private Tree tree;
 	/**
 	 * Launch the application.
 	 */
@@ -46,18 +46,42 @@ public class client {
 	 * Create the application.
 	 */
 	public client() {
-		this.connection = null;
 		//TODO add remote server
 		this.server = "localhost";
-		this.port = 2440;
-		tree = new Tree("mmdb");
-		
-		tree.createHierarchy();
+		this.port = 2345;
+		try {
+			this.connection = new Socket(this.server, this.port);
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		initialize();
 		
 	}
 
+	
+	public client(int port) {
+		
+		//TODO add remote server
+		this.server = "localhost";
+		this.port = port;
+		try {
+			this.connection = new Socket(this.server, this.port);
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		initialize();
+		
+	}
 	/**
 	 * Initialize the contents of the frame.
 	 */
@@ -66,7 +90,6 @@ public class client {
 		frame.setBounds(100, 100, 450, 300);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
-		
 		JList list = new JList();
 		list.addMouseListener(new MouseAdapter() {
 			@Override
@@ -74,9 +97,9 @@ public class client {
 				if(e.getClickCount() == 2 && !e.isConsumed())
 				{
 					e.consume();
-					if(tree.isArtist(list.getSelectedValue().toString()))
+					if(isArtist(list.getSelectedValue().toString()))
 						list.setModel(new AbstractListModel() {
-							String[] values = tree.getAlbums(list.getSelectedValue().toString());
+							String[] values = getAlbums(list.getSelectedValue().toString());
 							public int getSize() {
 								return values.length;
 							}
@@ -84,9 +107,9 @@ public class client {
 								return values[index];
 							}
 						});
-					else if(tree.isAlbum(list.getSelectedValue().toString()))
+					else if(isAlbum(list.getSelectedValue().toString()))
 						list.setModel(new AbstractListModel() {
-							String[] values = tree.getTracks(list.getSelectedValue().toString());
+							String[] values = getTracks(list.getSelectedValue().toString());
 							public int getSize() {
 								return values.length;
 							}
@@ -99,7 +122,7 @@ public class client {
 			}
 		});
 		list.setModel(new AbstractListModel() {
-			String[] values = tree.getArtists();
+			String[] values = getArtists();
 			public int getSize() {
 				return values.length;
 			}
@@ -144,9 +167,9 @@ public class client {
 		btnBack.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if(tree.isAlbum(list.getModel().getElementAt(0).toString()))
+				if(isAlbum(list.getModel().getElementAt(0).toString()))
 					list.setModel(new AbstractListModel() {
-						String[] values = tree.getArtists();
+						String[] values = getArtists();
 						public int getSize() {
 							return values.length;
 						}
@@ -154,9 +177,9 @@ public class client {
 							return values[index];
 						}
 					});
-				else if(tree.isTrack(list.getModel().getElementAt(0).toString()))
+				else if(isTrack(list.getModel().getElementAt(0).toString()))
 					list.setModel(new AbstractListModel() {
-						String[] values = tree.backAlbums(list.getModel().getElementAt(0).toString());
+						String[] values = backAlbums(list.getModel().getElementAt(0).toString());
 						public int getSize() {
 							return values.length;
 						}
@@ -182,6 +205,105 @@ public class client {
 			System.exit(-1); // termina il programma restituendo un errore
 		}
 
+	}
+	
+	private boolean isArtist(String artist) {
+		InputStreamReader sender, // Stream di input da tastiera
+				receiver; // Stream di input dal server
+
+		BufferedReader keyboard, // buffer per l'input da tastiera
+				server; // buffer per lo stream del server
+
+		OutputStream out; // stream di connessione con il server
+
+		PrintWriter printer;
+		String message;
+
+		try {
+			receiver = new InputStreamReader(this.connection.getInputStream());
+			server = new BufferedReader(receiver);
+
+			out = this.connection.getOutputStream();
+			printer = new PrintWriter(out);
+
+			printer.println("isArtist;"+artist);
+			printer.flush();
+			message = server.readLine();
+			if(message.toLowerCase().equals("true"))
+				return true;
+			else if(message.toLowerCase().equals("false"))
+				return false;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	private boolean isAlbum(String album) {
+		InputStreamReader sender, // Stream di input da tastiera
+				receiver; // Stream di input dal server
+
+		BufferedReader keyboard, // buffer per l'input da tastiera
+				server; // buffer per lo stream del server
+
+		OutputStream out; // stream di connessione con il server
+
+		PrintWriter printer;
+		String message;
+
+		try {
+			receiver = new InputStreamReader(this.connection.getInputStream());
+			server = new BufferedReader(receiver);
+
+			out = this.connection.getOutputStream();
+			printer = new PrintWriter(out);
+
+			printer.println("isAlbum;"+album);
+			printer.flush();
+			message = server.readLine();
+			if(message.toLowerCase().equals("true"))
+				return true;
+			else if(message.toLowerCase().equals("false"))
+				return false;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	private boolean isTrack(String track) {
+		InputStreamReader sender, // Stream di input da tastiera
+				receiver; // Stream di input dal server
+
+		BufferedReader keyboard, // buffer per l'input da tastiera
+				server; // buffer per lo stream del server
+
+		OutputStream out; // stream di connessione con il server
+
+		PrintWriter printer;
+		String message;
+
+		try {
+			receiver = new InputStreamReader(this.connection.getInputStream());
+			server = new BufferedReader(receiver);
+
+			out = this.connection.getOutputStream();
+			printer = new PrintWriter(out);
+
+			printer.println("isTrack;"+track);
+			printer.flush();
+			message = server.readLine();
+			if(message.toLowerCase().equals("true"))
+				return true;
+			else if(message.toLowerCase().equals("false"))
+				return false;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
 	}
 	
 	private String[] getArtists() {
@@ -294,4 +416,43 @@ public class client {
 		}
 		return null;
 	}
+
+	private String[] backAlbums(String track) {
+		InputStreamReader sender, // Stream di input da tastiera
+				receiver; // Stream di input dal server
+
+		BufferedReader keyboard, // buffer per l'input da tastiera
+				server; // buffer per lo stream del server
+
+		OutputStream out; // stream di connessione con il server
+
+		PrintWriter printer;
+		String message;
+		
+		try {
+			receiver = new InputStreamReader(this.connection.getInputStream());
+			server = new BufferedReader(receiver);
+			
+			out = this.connection.getOutputStream();
+			printer = new PrintWriter(out);
+			
+			printer.println("backAlbums;"+track);
+			printer.flush();
+			message = server.readLine();
+			StringTokenizer stkn = new StringTokenizer(message, ";");
+			String[] result = new String[stkn.countTokens()];
+			
+			for(int i=0; stkn.hasMoreTokens(); i++)
+				result[i] = stkn.nextToken();
+			
+			return result;
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	
 }

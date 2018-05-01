@@ -7,12 +7,16 @@ public class Server {
 
 	private Socket connection;
 	private ServerSocket serverSocket;
+	private Tree tree;
 	private int port;
+	private boolean isAlive;
 	
 	public Server() {
 		this.connection = null;
-		this.port = 2440;
-		
+		this.port = 2345;
+		this.isAlive = true;
+		this.tree = new Tree("mmdb");
+		this.tree.createHierarchy();
 		startServer();
 	}
 	
@@ -21,7 +25,9 @@ public class Server {
 	public Server(int port) {
 		this.connection = null;
 		this.port = port;
-		
+		this.isAlive = true;
+		this.tree = new Tree("mmdb");
+		this.tree.createHierarchy();
 		startServer();
 	}
 	
@@ -36,16 +42,71 @@ public class Server {
 	    PrintWriter printer;            //contiene i metodi necessari per inviare i messaggi
 
 	    String message;                 //stringa per invio e ricezione messaggi
-		
+	    
 		try
 		{
 			this.serverSocket = new ServerSocket(this.port);
 			
-			
-			this.connection = this.serverSocket.accept();
-			
-			
-			
+			while(this.isAlive)
+			{
+				this.connection = this.serverSocket.accept();	//accept the connection request
+				
+				inputStream = new InputStreamReader(this.connection.getInputStream());	//input stream connected with client
+				buffer = new BufferedReader(inputStream);
+				
+				output = this.connection.getOutputStream();	//output stream connected with client
+				printer = new PrintWriter(output);	//permits communication
+				
+				message = buffer.readLine();	//waits for the command to be performed
+				StringTokenizer stkn = new StringTokenizer(message, ";");
+				if(stkn.hasMoreTokens())
+				{
+					switch (stkn.nextToken()) {
+					case "die":
+						this.isAlive = false;
+						printer.println("I'm dead right now");
+						break;
+
+					case "isArtist":
+						printer.println(this.isArtist(stkn.nextToken()));
+						printer.flush();
+						break;
+
+					case "isAlbum":
+						printer.println(this.isAlbum(stkn.nextToken()));
+						printer.flush();
+						break;
+						
+					case "isTrack":
+						printer.println(this.isTrack(stkn.nextToken()));
+						printer.flush();
+						break;
+						
+					case "getArtists":
+						printer.println(this.getArtists());
+						printer.flush();
+						break;
+						
+					case "getAlbums":
+						printer.println(this.getAlbums(stkn.nextToken()));
+						printer.flush();
+						break;
+						
+					case "getTracks":
+						printer.println(this.getTracks(stkn.nextToken()));
+						printer.flush();
+						break;
+						
+					case "backAlbums":
+						printer.println(this.backAlbums(stkn.nextToken()));
+						printer.flush();
+						break;
+					}
+				}
+				
+				
+				
+			}
 		}
 		catch(Exception e)
 		{
@@ -54,7 +115,43 @@ public class Server {
 		
 	}
 	
+	private String getArtists() {
+		return this.tree.getArtists();
+	}
+	
+	private String getAlbums(String artist) {
+		return this.tree.getAlbums(artist);
+	}
+	
+	private String getTracks(String album) {
+		return this.tree.getTracks(album);
+	}
+	
+	private String backAlbums(String track) {
+		return this.tree.backAlbums(track);
+	}
+	
+	private String isArtist(String artist) {
+		if(this.tree.isArtist(artist))
+			return "true";
+		
+		return "false";
+	}
+	
+	private String isAlbum(String album) {
+		if(this.tree.isAlbum(album))
+			return "true";
+		return "false";
+	}
+	
+	private String isTrack(String track) {
+		if(this.tree.isTrack(track))
+			return "true";
+		return "false";
+	}
+	
 	public static void main(String[] Args) {
+		Server server = new Server();
 		
 	}
 	
