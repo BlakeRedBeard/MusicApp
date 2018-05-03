@@ -3,5 +3,9 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="D:/Repositories/MusicApp/libs/mysql-connector-java-8.0.11.jar"/>
+	<classpathentry kind="lib" path="D:/Repositories/MusicApp/libs/customizer.jar"/>
+	<classpathentry kind="lib" path="D:/Repositories/MusicApp/libs/jmf.jar"/>
+	<classpathentry kind="lib" path="D:/Repositories/MusicApp/libs/mediaplayer.jar"/>
+	<classpathentry kind="lib" path="D:/Repositories/MusicApp/libs/multiplayer.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

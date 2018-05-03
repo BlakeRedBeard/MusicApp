@@ -4,9 +4,13 @@ import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.AbstractListModel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -26,6 +30,15 @@ public class client {
 	private Socket connection;
 	private String server;
 	private int port;
+	private InputStreamReader 	sender, // Stream di input da tastiera
+								receiver; // Stream di input dal server
+
+	private BufferedReader  buffer; // buffer per lo stream del server
+
+	private OutputStream out; // stream di connessione con il server
+
+	private PrintWriter printer;
+	
 	/**
 	 * Launch the application.
 	 */
@@ -49,16 +62,7 @@ public class client {
 		//TODO add remote server
 		this.server = "localhost";
 		this.port = 2345;
-		try {
-			this.connection = new Socket(this.server, this.port);
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+		this.StartClient();		
 		initialize();
 		
 	}
@@ -69,16 +73,7 @@ public class client {
 		//TODO add remote server
 		this.server = "localhost";
 		this.port = port;
-		try {
-			this.connection = new Socket(this.server, this.port);
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+		this.StartClient();
 		initialize();
 		
 	}
@@ -87,8 +82,30 @@ public class client {
 	 */
 	private void initialize() {
 		frame = new JFrame();
+		frame.setResizable(false);
 		frame.setBounds(100, 100, 450, 300);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		WindowListener exitListener = new WindowAdapter() {
+			private client frame;
+			
+			public WindowAdapter setFrame(client frame) {
+				this.frame = frame;
+				return this;
+			}
+			
+		    @Override
+		    public void windowClosing(WindowEvent e) {
+		        int confirm = JOptionPane.showOptionDialog(
+		             null, "Are You Sure to Close Application?", 
+		             "Exit Confirmation", JOptionPane.YES_NO_OPTION, 
+		             JOptionPane.QUESTION_MESSAGE, null, null, null);
+		        if (confirm == 0) {
+		           this.frame.closeConnection();
+		           System.exit(0);
+		        }
+		    }
+		}.setFrame(this);
+		frame.addWindowListener(exitListener);
 		frame.getContentPane().setLayout(null);
 		JList list = new JList();
 		list.addMouseListener(new MouseAdapter() {
@@ -199,6 +216,11 @@ public class client {
 		try {
 			this.connection = new Socket(this.server, this.port);
 			System.out.println("connessione stabilita...");
+			receiver = new InputStreamReader(this.connection.getInputStream());
+			buffer = new BufferedReader(receiver);
+
+			out = this.connection.getOutputStream();
+			printer = new PrintWriter(out);
 
 		} catch (IOException e) {
 			System.out.println(e);
@@ -208,27 +230,14 @@ public class client {
 	}
 	
 	private boolean isArtist(String artist) {
-		InputStreamReader sender, // Stream di input da tastiera
-				receiver; // Stream di input dal server
 
-		BufferedReader keyboard, // buffer per l'input da tastiera
-				server; // buffer per lo stream del server
-
-		OutputStream out; // stream di connessione con il server
-
-		PrintWriter printer;
 		String message;
 
 		try {
-			receiver = new InputStreamReader(this.connection.getInputStream());
-			server = new BufferedReader(receiver);
-
-			out = this.connection.getOutputStream();
-			printer = new PrintWriter(out);
-
 			printer.println("isArtist;"+artist);
 			printer.flush();
-			message = server.readLine();
+			
+			message = buffer.readLine();
 			if(message.toLowerCase().equals("true"))
 				return true;
 			else if(message.toLowerCase().equals("false"))
@@ -241,27 +250,12 @@ public class client {
 	}
 	
 	private boolean isAlbum(String album) {
-		InputStreamReader sender, // Stream di input da tastiera
-				receiver; // Stream di input dal server
-
-		BufferedReader keyboard, // buffer per l'input da tastiera
-				server; // buffer per lo stream del server
-
-		OutputStream out; // stream di connessione con il server
-
-		PrintWriter printer;
 		String message;
 
 		try {
-			receiver = new InputStreamReader(this.connection.getInputStream());
-			server = new BufferedReader(receiver);
-
-			out = this.connection.getOutputStream();
-			printer = new PrintWriter(out);
-
 			printer.println("isAlbum;"+album);
 			printer.flush();
-			message = server.readLine();
+			message = buffer.readLine();
 			if(message.toLowerCase().equals("true"))
 				return true;
 			else if(message.toLowerCase().equals("false"))
@@ -274,27 +268,12 @@ public class client {
 	}
 	
 	private boolean isTrack(String track) {
-		InputStreamReader sender, // Stream di input da tastiera
-				receiver; // Stream di input dal server
-
-		BufferedReader keyboard, // buffer per l'input da tastiera
-				server; // buffer per lo stream del server
-
-		OutputStream out; // stream di connessione con il server
-
-		PrintWriter printer;
 		String message;
 
 		try {
-			receiver = new InputStreamReader(this.connection.getInputStream());
-			server = new BufferedReader(receiver);
-
-			out = this.connection.getOutputStream();
-			printer = new PrintWriter(out);
-
 			printer.println("isTrack;"+track);
 			printer.flush();
-			message = server.readLine();
+			message = buffer.readLine();
 			if(message.toLowerCase().equals("true"))
 				return true;
 			else if(message.toLowerCase().equals("false"))
@@ -307,27 +286,12 @@ public class client {
 	}
 	
 	private String[] getArtists() {
-		InputStreamReader sender, // Stream di input da tastiera
-				receiver; // Stream di input dal server
-
-		BufferedReader keyboard, // buffer per l'input da tastiera
-				server; // buffer per lo stream del server
-
-		OutputStream out; // stream di connessione con il server
-
-		PrintWriter printer;
 		String message;
 		
 		try {
-			receiver = new InputStreamReader(this.connection.getInputStream());
-			server = new BufferedReader(receiver);
-			
-			out = this.connection.getOutputStream();
-			printer = new PrintWriter(out);
-			
 			printer.println("getArtists;");
 			printer.flush();
-			message = server.readLine();
+			message = buffer.readLine();
 			StringTokenizer stkn = new StringTokenizer(message, ";");
 			String[] result = new String[stkn.countTokens()];
 			
@@ -344,27 +308,12 @@ public class client {
 	}
 	
 	private String[] getAlbums(String artist) {
-		InputStreamReader sender, // Stream di input da tastiera
-				receiver; // Stream di input dal server
-
-		BufferedReader keyboard, // buffer per l'input da tastiera
-				server; // buffer per lo stream del server
-
-		OutputStream out; // stream di connessione con il server
-
-		PrintWriter printer;
 		String message;
 		
 		try {
-			receiver = new InputStreamReader(this.connection.getInputStream());
-			server = new BufferedReader(receiver);
-			
-			out = this.connection.getOutputStream();
-			printer = new PrintWriter(out);
-			
 			printer.println("getAlbums;"+artist);
 			printer.flush();
-			message = server.readLine();
+			message = buffer.readLine();
 			StringTokenizer stkn = new StringTokenizer(message, ";");
 			String[] result = new String[stkn.countTokens()];
 			
@@ -381,27 +330,12 @@ public class client {
 	}
 	
 	private String[] getTracks(String album) {
-		InputStreamReader sender, // Stream di input da tastiera
-				receiver; // Stream di input dal server
-
-		BufferedReader keyboard, // buffer per l'input da tastiera
-				server; // buffer per lo stream del server
-
-		OutputStream out; // stream di connessione con il server
-
-		PrintWriter printer;
 		String message;
 		
 		try {
-			receiver = new InputStreamReader(this.connection.getInputStream());
-			server = new BufferedReader(receiver);
-			
-			out = this.connection.getOutputStream();
-			printer = new PrintWriter(out);
-			
 			printer.println("getTracks;"+album);
 			printer.flush();
-			message = server.readLine();
+			message = buffer.readLine();
 			StringTokenizer stkn = new StringTokenizer(message, ";");
 			String[] result = new String[stkn.countTokens()];
 			
@@ -418,27 +352,12 @@ public class client {
 	}
 
 	private String[] backAlbums(String track) {
-		InputStreamReader sender, // Stream di input da tastiera
-				receiver; // Stream di input dal server
-
-		BufferedReader keyboard, // buffer per l'input da tastiera
-				server; // buffer per lo stream del server
-
-		OutputStream out; // stream di connessione con il server
-
-		PrintWriter printer;
 		String message;
 		
 		try {
-			receiver = new InputStreamReader(this.connection.getInputStream());
-			server = new BufferedReader(receiver);
-			
-			out = this.connection.getOutputStream();
-			printer = new PrintWriter(out);
-			
 			printer.println("backAlbums;"+track);
 			printer.flush();
-			message = server.readLine();
+			message = buffer.readLine();
 			StringTokenizer stkn = new StringTokenizer(message, ";");
 			String[] result = new String[stkn.countTokens()];
 			
@@ -454,5 +373,20 @@ public class client {
 		return null;
 	}
 	
+	private void closeConnection() {
+		this.printer.print("die");
+		this.printer.flush();
+		this.printer.close();
+		try {
+			this.out.close();
+			this.buffer.close();
+			this.receiver.close();
+			this.connection.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
 	
 }

@@ -47,64 +47,66 @@ public class Server {
 		{
 			this.serverSocket = new ServerSocket(this.port);
 			
-			while(this.isAlive)
+			while(true)
 			{
 				this.connection = this.serverSocket.accept();	//accept the connection request
-				
+				this.isAlive = true;
 				inputStream = new InputStreamReader(this.connection.getInputStream());	//input stream connected with client
 				buffer = new BufferedReader(inputStream);
 				
 				output = this.connection.getOutputStream();	//output stream connected with client
 				printer = new PrintWriter(output);	//permits communication
-				
-				message = buffer.readLine();	//waits for the command to be performed
-				StringTokenizer stkn = new StringTokenizer(message, ";");
-				if(stkn.hasMoreTokens())
+				while(this.isAlive)
 				{
-					switch (stkn.nextToken()) {
-					case "die":
-						this.isAlive = false;
-						printer.println("I'm dead right now");
-						break;
-
-					case "isArtist":
-						printer.println(this.isArtist(stkn.nextToken()));
-						printer.flush();
-						break;
-
-					case "isAlbum":
-						printer.println(this.isAlbum(stkn.nextToken()));
-						printer.flush();
-						break;
-						
-					case "isTrack":
-						printer.println(this.isTrack(stkn.nextToken()));
-						printer.flush();
-						break;
-						
-					case "getArtists":
-						printer.println(this.getArtists());
-						printer.flush();
-						break;
-						
-					case "getAlbums":
-						printer.println(this.getAlbums(stkn.nextToken()));
-						printer.flush();
-						break;
-						
-					case "getTracks":
-						printer.println(this.getTracks(stkn.nextToken()));
-						printer.flush();
-						break;
-						
-					case "backAlbums":
-						printer.println(this.backAlbums(stkn.nextToken()));
-						printer.flush();
-						break;
+					message = buffer.readLine();	//waits for the command to be performed
+					StringTokenizer stkn = new StringTokenizer(message, ";");
+					if(stkn.hasMoreTokens())
+					{
+						switch (stkn.nextToken().toLowerCase()) {
+						case "die":
+							this.isAlive = false;
+							printer.println("I'm dead right now");
+							printer.flush();
+							break;
+	
+						case "isartist":
+							printer.println(this.isArtist(stkn.nextToken()));
+							printer.flush();
+							break;
+	
+						case "isalbum":
+							printer.println(this.isAlbum(stkn.nextToken()));
+							printer.flush();
+							break;
+							
+						case "istrack":
+							printer.println(this.isTrack(stkn.nextToken()));
+							printer.flush();
+							break;
+							
+						case "getartists":
+							printer.println(this.getArtists());
+							printer.flush();
+							break;
+							
+						case "getalbums":
+							printer.println(this.getAlbums(stkn.nextToken()));
+							printer.flush();
+							break;
+							
+						case "gettracks":
+							printer.println(this.getTracks(stkn.nextToken()));
+							printer.flush();
+							break;
+							
+						case "backalbums":
+							printer.println(this.backAlbums(stkn.nextToken()));
+							printer.flush();
+							break;
+						}
 					}
+				
 				}
-				
-				
 				
 			}
 		}

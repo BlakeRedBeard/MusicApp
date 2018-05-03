@@ -143,7 +143,7 @@ public class Tree {
 								String albums = "";
 								for(int y=0; y<this.menu.getSons().get(i).getSons().size(); y++)
 								{
-									albums = this.menu.getSons().get(i).getSons().get(y).getName()+";";
+									albums += this.menu.getSons().get(i).getSons().get(y).getName()+";";
 								}
 								return albums;
 							}
