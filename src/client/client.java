@@ -151,6 +151,7 @@ public class client {
 		frame.getContentPane().add(list);
 		
 		JButton btnPre = new JButton("<<");
+		btnPre.setActionCommand("previous");
 		btnPre.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 			}
@@ -159,28 +160,47 @@ public class client {
 		frame.getContentPane().add(btnPre);
 		
 		JButton btnPlay = new JButton("\u25BA");
+		btnPlay.setActionCommand("play");
+		btnPlay.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				System.out.println(arg0.getActionCommand());
+			}
+		});
 		btnPlay.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if(btnPlay.getText() == "\u25BA")
+				{
 					btnPlay.setText("\u2590 \u258C");
+					btnPlay.setActionCommand("pause");
+				}
 				else
 				if(btnPlay.getText() == "\u2590 \u258C")
+				{
 					btnPlay.setText("\u25BA");
+					btnPlay.setActionCommand("play");
+				}
 			}
 		});
 		btnPlay.setBounds(109, 170, 89, 23);
 		frame.getContentPane().add(btnPlay);
 		
 		JButton btnNext = new JButton(">>");
+		btnNext.setActionCommand("next");
 		btnNext.setBounds(208, 170, 89, 23);
 		frame.getContentPane().add(btnNext);
 		
 		JButton btnStart = new JButton("Start Reproduction");
+		btnStart.setActionCommand("Start");
 		btnStart.setBounds(55, 204, 197, 23);
 		frame.getContentPane().add(btnStart);
 		
 		JButton btnBack = new JButton("back");
+		btnBack.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+		});
 		btnBack.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
