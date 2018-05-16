@@ -69,5 +69,6 @@ public class BasicPlayer {
 		Scanner scanner = new Scanner(System.in);
 		scanner.nextLine();
 		player.stop();
+		
 	}
 }

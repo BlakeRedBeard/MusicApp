@@ -191,6 +191,11 @@ public class client {
 		frame.getContentPane().add(btnNext);
 		
 		JButton btnStart = new JButton("Start Reproduction");
+		btnStart.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+			}
+		});
 		btnStart.setActionCommand("Start");
 		btnStart.setBounds(55, 204, 197, 23);
 		frame.getContentPane().add(btnStart);

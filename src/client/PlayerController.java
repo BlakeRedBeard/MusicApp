@@ -18,7 +18,8 @@ public class PlayerController implements ActionListener{
 						  break;
 			case "pause": player.pause();
 						  break;
-			case "start": break;
+			case "start": 
+						  break;
 		}
 	}
 }
