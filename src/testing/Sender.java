@@ -88,10 +88,11 @@ public class Sender {
 							File file = new File("res/ilSolitoSesso.mp3");
 							byte[] song = new byte[(int) file.length()];
 							FileInputStream input = new FileInputStream(file);
+							
 							BufferedInputStream bis = new BufferedInputStream(input);
 							bis.read(song, 0, song.length);
-							ObjectOutputStream bos = new ObjectOutputStream(sender.connection.getOutputStream());
-							bos.write(song, 0, song.length);
+							sender.connection.getOutputStream().write(song);
+							
 							break;
 						
 						}

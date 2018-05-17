@@ -1,13 +1,19 @@
 package testing;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 
 import javax.swing.JFrame;
+
 
 public class Receiver {
 
@@ -38,12 +44,16 @@ public class Receiver {
 			
 			receiver.printer.println("send");
 			receiver.printer.flush();
+			File song = new File(File.createTempFile("mysong", ".mp3").getAbsolutePath());
+			InputStream input = receiver.connection.getInputStream();
+			byte[] bytes = new byte[4096];
+			int bytesRead = -1;
+			FileOutputStream file = new FileOutputStream(song);
 			
-			while(receiver.buffer.ready())
-			{
-				System.out.println(receiver.buffer.readLine());
+			while((bytesRead = input.read(bytes)) != -1) {
+				file.write(bytes);
 			}
-
+			
 			
 			receiver.printer.println("die");
 			receiver.printer.flush();
