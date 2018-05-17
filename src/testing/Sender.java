@@ -5,7 +5,9 @@ import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
@@ -31,20 +33,30 @@ public class Sender {
 	    PrintWriter printer;            //contiene i metodi necessari per inviare i messaggi
 
 	    String message;                 //stringa per invio e ricezione messaggi
-	    
+	   /*  JUST A FEW TESTING
 	    try {
-	    File file = new File("res/ilSolitoSesso.mp3");
+	    File file = new File("res/radioactive.mp3");
 		byte[] song = new byte[(int) file.length()];
 		FileInputStream input = new FileInputStream(file);
 		BufferedInputStream bis = new BufferedInputStream(input);
 		bis.read(song, 0, song.length);
 		BufferedOutputStream bos; //= new BufferedOutputStream(sender.connection.getOutputStream());
-		bos = new BufferedOutputStream(System.out);
+		File copy = new File("res/radioactive.tmp");
+		if(!copy.exists())
+			copy.createNewFile();
+		FileOutputStream fos = new FileOutputStream(copy);
+		bos = new BufferedOutputStream(fos);
 		
 		bos.write(song, 0, song.length);
+		BasicPlayer player = new BasicPlayer("res/radioactive.tmp");
+		player.start();
+		player.setVolume(0.35);
+		Thread.sleep(50000);
+		player.stop();
 	    } catch(Exception e) {
 	    	e.printStackTrace();
 	    }
+	    */
 	    
 		try
 		{
@@ -71,19 +83,17 @@ public class Sender {
 							printer.println("I'm dead right now");
 							printer.flush();
 							break;
-	/*
+	
 						case "send":
 							File file = new File("res/ilSolitoSesso.mp3");
 							byte[] song = new byte[(int) file.length()];
 							FileInputStream input = new FileInputStream(file);
 							BufferedInputStream bis = new BufferedInputStream(input);
 							bis.read(song, 0, song.length);
-							BufferedOutputStream bos = new BufferedOutputStream(sender.connection.getOutputStream());
-							bos = new BufferedOutputStream(System.out);
-							
+							ObjectOutputStream bos = new ObjectOutputStream(sender.connection.getOutputStream());
 							bos.write(song, 0, song.length);
 							break;
-						*/
+						
 						}
 					}
 				
