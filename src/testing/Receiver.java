@@ -19,7 +19,7 @@ public class Receiver {
 
 	private JFrame frame;
 	private Socket connection;
-	private String server;
+	private String server = "localhost";
 	private int port = 2345;
 	private InputStreamReader 	sender, // Stream di input da tastiera
 								mahamf; // Stream di input dal server
@@ -49,11 +49,13 @@ public class Receiver {
 			byte[] bytes = new byte[4096];
 			int bytesRead = -1;
 			FileOutputStream file = new FileOutputStream(song);
+			int i = 0;
 			
-			while((bytesRead = input.read(bytes)) != -1) {
+			while((bytesRead = input.available()) != 0) {
+				input.read(bytes);
 				file.write(bytes);
 			}
-			
+			System.out.println("miao");
 			
 			receiver.printer.println("die");
 			receiver.printer.flush();
