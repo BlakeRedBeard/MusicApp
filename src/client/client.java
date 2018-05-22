@@ -26,6 +26,7 @@ import java.util.StringTokenizer;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.JTextField;
 //TODO cancel the class from here and then replace it's calls into client
 public class client {
 
@@ -41,6 +42,7 @@ public class client {
 	private BasicPlayer player;
 	private PrintWriter printer;
 	private static String path;
+	private JTextField txtServerAddress;
 	/**
 	 * Launch the application.
 	 */
@@ -81,6 +83,17 @@ public class client {
 		this.StartClient();
 		initialize();
 		
+	}
+	
+	public client(int port, String server) {
+
+		// TODO add remote server
+		this.server = server;
+		this.port = port;
+		path = null;
+		this.StartClient();
+		initialize();
+
 	}
 	/**
 	 * Initialize the contents of the frame.
@@ -143,16 +156,8 @@ public class client {
 				}
 			}
 		});
-		list.setModel(new AbstractListModel() {
-			String[] values = getArtists();
-			public int getSize() {
-				return values.length;
-			}
-			public Object getElementAt(int index) {
-				return values[index];
-			}
-		});
-		list.setBounds(10, 11, 338, 148);
+		
+		list.setBounds(10, 11, 286, 148);
 		frame.getContentPane().add(list);
 		
 		JButton btnPre = new JButton("<<");
@@ -207,7 +212,7 @@ public class client {
 			}
 		});
 		btnStart.setActionCommand("Start");
-		btnStart.setBounds(55, 204, 197, 23);
+		btnStart.setBounds(10, 204, 174, 23);
 		frame.getContentPane().add(btnStart);
 		
 		JButton btnBack = new JButton("back");
@@ -241,8 +246,34 @@ public class client {
 					});
 			}
 		});
-		btnBack.setBounds(298, 204, 89, 23);
+		btnBack.setBounds(208, 204, 89, 23);
 		frame.getContentPane().add(btnBack);
+		
+		txtServerAddress = new JTextField();
+		txtServerAddress.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if(txtServerAddress.getText().equals("inserire l'indirizzo ip"))
+					txtServerAddress.setText("");
+			}
+		});
+		txtServerAddress.setText("Inserire l'indirizzo ip");
+		txtServerAddress.setBounds(306, 11, 128, 23);
+		frame.getContentPane().add(txtServerAddress);
+		txtServerAddress.setColumns(10);
+		
+		JButton btnConnect = new JButton("connect");
+		btnConnect.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				server = txtServerAddress.getText();
+				if(server.equals("Inserire l'indirizzo ip"))
+					server = "localhost";
+				StartClient();
+				setConnectionsNeeded(list);
+			}
+		});
+		btnConnect.setBounds(306, 45, 128, 23);
+		frame.getContentPane().add(btnConnect);
 	}
 	
 	
@@ -259,7 +290,7 @@ public class client {
 
 		} catch (IOException e) {
 			System.out.println(e);
-			System.exit(-1); // termina il programma restituendo un errore
+			
 		}
 
 	}
@@ -441,18 +472,32 @@ public class client {
 		}
 	}
 	
+	private void setConnectionsNeeded(JList list) {
+		
+		list.setModel(new AbstractListModel() {
+			String[] values = getArtists();
+			public int getSize() {
+				return values.length;
+			}
+			public Object getElementAt(int index) {
+				return values[index];
+			}
+		});
+		
+	}
 	
 	private void closeConnection() {
-		this.printer.print("die");
-		this.printer.flush();
-		this.printer.close();
 		try {
+			this.printer.print("die");
+			this.printer.flush();
+			this.printer.close();
+		
 			this.out.close();
 			this.buffer.close();
 			this.receiver.close();
 			this.connection.close();
 			killTemp();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			System.exit(-1);
