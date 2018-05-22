@@ -40,7 +40,7 @@ public class client {
 	private OutputStream out; // stream di connessione con il server
 
 	private PrintWriter printer;
-	
+	private static String path;
 	/**
 	 * Launch the application.
 	 */
@@ -64,6 +64,7 @@ public class client {
 		//TODO add remote server
 		this.server = "localhost";
 		this.port = 2345;
+		path = null;
 		this.StartClient();		
 		initialize();
 		
@@ -75,6 +76,7 @@ public class client {
 		//TODO add remote server
 		this.server = "localhost";
 		this.port = port;
+		path = null;
 		this.StartClient();
 		initialize();
 		
@@ -194,11 +196,9 @@ public class client {
 		
 		JButton btnStart = new JButton("Start Reproduction");
 		btnStart.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				//TODO CANCELLA I SYSTEM OUT
-				System.out.println(list.getSelectedValue().toString());
-				String path = requestSong(list.getSelectedValue().toString());
-				System.out.println(path);
+			public void actionPerformed(ActionEvent arg0) {	
+				killTemp();
+				path = requestSong(list.getSelectedValue().toString());
 			}
 		});
 		btnStart.setActionCommand("Start");
@@ -404,13 +404,10 @@ public class client {
 	}
 	
 	private String requestSong(String songName) {
-		String message = "";
 		try
 		{
-			printer.print("sendSong;"+songName);
+			printer.println("sendSong;"+songName);
 			printer.flush();
-			message = buffer.readLine();
-			System.out.println(message);
 			File song = new File(File.createTempFile(songName, ".tmp").getAbsolutePath());
 			byte[] bytes = new byte[4096];
 			FileOutputStream file = new FileOutputStream(song);
@@ -428,6 +425,18 @@ public class client {
 		return null;
 	}
 	
+	private void killTemp() {
+		
+		if(path != null)
+		{
+			File f = new File(path);
+			if(f.exists())
+				f.delete();
+			path = null;
+		}
+	}
+	
+	
 	private void closeConnection() {
 		this.printer.print("die");
 		this.printer.flush();
@@ -437,9 +446,11 @@ public class client {
 			this.buffer.close();
 			this.receiver.close();
 			this.connection.close();
+			killTemp();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			System.exit(-1);
 		}
 		
 	}

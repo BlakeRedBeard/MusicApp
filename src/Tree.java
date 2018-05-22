@@ -53,7 +53,7 @@ public class Tree {
 						{
 							artisti.get(i).addSon(null, album.getString("nome"), album.getString("codice"));
 							//System.out.println("\talbum aggiunto: "+album.getString("nome"));
-							ResultSet brani = this.database.select("SELECT codice, nome FROM brano WHERE brano.codAlbum = "+album.getString("codice"));
+							ResultSet brani = this.database.select("SELECT codice, nome, locazione FROM brano WHERE brano.codAlbum = "+album.getString("codice"));
 							ArrayList<Node> albums = artisti.get(i).getSons();
 							for(int j=0; j<albums.size(); j++)
 							{
@@ -61,7 +61,7 @@ public class Tree {
 								{
 									while(brani.next())
 									{
-										albums.get(j).addSon(null, brani.getString("nome"), brani.getString("codice"));
+										albums.get(j).addSon(brani.getString("locazione"), brani.getString("nome"), brani.getString("codice"));
 										//System.out.println("\t\tbrano aggiunto: "+brani.getString("nome"));
 									}
 								}
@@ -234,6 +234,7 @@ public class Tree {
 		albero.database.connect();
 		albero.createHierarchy();
 		//albero.visualizeHierarchy();
+		System.out.println(albero.getTrackPath("radioactive"));
 		try {
 			albero.database.getConnection().close();
 		} catch (SQLException e) {

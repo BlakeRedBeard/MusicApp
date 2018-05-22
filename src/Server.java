@@ -105,17 +105,18 @@ public class Server {
 							break;
 							
 						case "sendsong": 
-							printer.println("iniziato con successo");
-							printer.flush();
+							
 							String absolutePath = getTrackPath(stkn.nextToken());
-							
-							File file = new File(absolutePath);
-							byte[] song = new byte[(int) file.length()];
-							FileInputStream input = new FileInputStream(file);
-							
-							BufferedInputStream bis = new BufferedInputStream(input);
-							bis.read(song, 0, song.length);
-							output.write(song);
+							if(absolutePath != null || absolutePath != "" || absolutePath != "null")
+							{
+								System.out.println(absolutePath);
+								File file = new File(absolutePath);
+								byte[] song = new byte[(int) file.length()];
+								FileInputStream input = new FileInputStream(file);
+								BufferedInputStream bis = new BufferedInputStream(input);
+								bis.read(song, 0, song.length);
+								output.write(song);
+							}
 							break;
 						}
 					}
