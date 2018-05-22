@@ -103,6 +103,20 @@ public class Server {
 							printer.println(this.backAlbums(stkn.nextToken()));
 							printer.flush();
 							break;
+							
+						case "sendsong": 
+							printer.println("iniziato con successo");
+							printer.flush();
+							String absolutePath = getTrackPath(stkn.nextToken());
+							
+							File file = new File(absolutePath);
+							byte[] song = new byte[(int) file.length()];
+							FileInputStream input = new FileInputStream(file);
+							
+							BufferedInputStream bis = new BufferedInputStream(input);
+							bis.read(song, 0, song.length);
+							output.write(song);
+							break;
 						}
 					}
 				
@@ -151,6 +165,17 @@ public class Server {
 			return "true";
 		return "false";
 	}
+	
+	private String getTrackPath(String songName) {
+		String absolutePath;
+		
+		if((absolutePath = this.tree.getTrackPath(songName.toLowerCase())) != null)
+		{
+			return absolutePath;
+		}
+		return null;
+	}
+	
 	
 	public static void main(String[] Args) {
 		Server server = new Server();

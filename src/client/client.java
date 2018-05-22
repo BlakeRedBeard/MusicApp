@@ -12,7 +12,10 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -30,8 +33,7 @@ public class client {
 	private Socket connection;
 	private String server;
 	private int port;
-	private InputStreamReader 	sender, // Stream di input da tastiera
-								receiver; // Stream di input dal server
+	private InputStreamReader 	receiver; // Stream di input dal server
 
 	private BufferedReader  buffer; // buffer per lo stream del server
 
@@ -193,7 +195,10 @@ public class client {
 		JButton btnStart = new JButton("Start Reproduction");
 		btnStart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				
+				//TODO CANCELLA I SYSTEM OUT
+				System.out.println(list.getSelectedValue().toString());
+				String path = requestSong(list.getSelectedValue().toString());
+				System.out.println(path);
 			}
 		});
 		btnStart.setActionCommand("Start");
@@ -395,6 +400,31 @@ public class client {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return null;
+	}
+	
+	private String requestSong(String songName) {
+		String message = "";
+		try
+		{
+			printer.print("sendSong;"+songName);
+			printer.flush();
+			message = buffer.readLine();
+			System.out.println(message);
+			File song = new File(File.createTempFile(songName, ".tmp").getAbsolutePath());
+			byte[] bytes = new byte[4096];
+			FileOutputStream file = new FileOutputStream(song);
+			
+			while(connection.getInputStream().available() != 0) {
+				connection.getInputStream().read(bytes);
+				file.write(bytes);
+			}
+			file.close();
+			return song.getAbsolutePath();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
 		return null;
 	}
 	

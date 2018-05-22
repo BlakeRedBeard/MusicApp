@@ -194,6 +194,21 @@ public class Tree {
 
 		return false;
 	}
+	
+	//returns the absolutePath of the specified track
+	public String getTrackPath(String track) {
+		if (!this.menu.getSons().isEmpty() || this.menu.getSons() != null) {
+			for (int i = 0; i < this.menu.getSons().size(); i++) {
+				for (int j = 0; j < this.menu.getSons().get(i).getSons().size(); j++) {
+					for (int z = 0; z < this.menu.getSons().get(i).getSons().get(j).getSons().size(); z++) {
+						if (track.equals(this.menu.getSons().get(i).getSons().get(j).getSons().get(z).getName().toLowerCase()))
+							return this.menu.getSons().get(i).getSons().get(j).getSons().get(z).getPath();
+					}
+				}
+			}
+		}
+		return null;
+	}
 	/* DEPRECATED only used to visualize the correct creation of the structure
 	public void visualizeHierarchy() {
 		ArrayList<Node> artists = this.menu.getSons();
