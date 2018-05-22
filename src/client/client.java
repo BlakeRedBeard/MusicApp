@@ -38,7 +38,7 @@ public class client {
 	private BufferedReader  buffer; // buffer per lo stream del server
 
 	private OutputStream out; // stream di connessione con il server
-
+	private BasicPlayer player;
 	private PrintWriter printer;
 	private static String path;
 	/**
@@ -65,6 +65,7 @@ public class client {
 		this.server = "localhost";
 		this.port = 2345;
 		path = null;
+		this.player = new BasicPlayer();
 		this.StartClient();		
 		initialize();
 		
@@ -167,7 +168,10 @@ public class client {
 		btnPlay.setActionCommand("play");
 		btnPlay.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				System.out.println(arg0.getActionCommand());
+				if(arg0.getActionCommand().equals("play"))
+					player.start();
+				else if(arg0.getActionCommand().equals("pause"))
+					player.stop();
 			}
 		});
 		btnPlay.addMouseListener(new MouseAdapter() {
@@ -199,6 +203,7 @@ public class client {
 			public void actionPerformed(ActionEvent arg0) {	
 				killTemp();
 				path = requestSong(list.getSelectedValue().toString());
+				player.changeTrack(path);
 			}
 		});
 		btnStart.setActionCommand("Start");

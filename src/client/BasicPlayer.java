@@ -9,11 +9,6 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
 
-
-
-
-
-
 public class BasicPlayer {
 	private MediaPlayer mediaPlayer;
 	private String path;
@@ -26,12 +21,12 @@ public class BasicPlayer {
 	public BasicPlayer(String path) {
 		JFXPanel starter = new JFXPanel();
 		changeTrack(path);
-		Media hit = new Media(new File(path).toURI().toString());
-		this.mediaPlayer = new MediaPlayer(hit);
 	}
 	
 	public void changeTrack(String path) {
 		this.path = path;
+		Media hit = new Media(new File(path).toURI().toString());
+		this.mediaPlayer = new MediaPlayer(hit);
 	}
 	
 	public void start() {
@@ -39,6 +34,7 @@ public class BasicPlayer {
 	}
 	
 	public void stop() {
+		this.mediaPlayer.setStartTime(Duration.minutes(this.getCurrentTime()));
 		this.mediaPlayer.stop();
 	}
 	
