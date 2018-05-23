@@ -114,8 +114,11 @@ public class Server {
 								byte[] song = new byte[(int) file.length()];
 								FileInputStream input = new FileInputStream(file);
 								BufferedInputStream bis = new BufferedInputStream(input);
-								bis.read(song, 0, song.length);
-								output.write(song);
+                                bis.read(song, 0, song.length);
+                                DataOutputStream dos = new DataOutputStream(output);
+                                dos.writeInt(song.length);
+                                if(song.length > 0)
+                                	dos.write(song);
 							}
 							break;
 						}
@@ -125,9 +128,18 @@ public class Server {
 				
 			}
 		}
+		catch(SocketException e) {
+			try {
+				this.serverSocket.close();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			startServer();
+		}
 		catch(Exception e)
 		{
-			
+			e.printStackTrace();
 		}
 		
 	}

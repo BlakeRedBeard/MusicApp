@@ -12,6 +12,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -27,6 +28,8 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JTextField;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 //TODO cancel the class from here and then replace it's calls into client
 public class client {
 
@@ -67,8 +70,7 @@ public class client {
 		this.server = "localhost";
 		this.port = 2345;
 		path = null;
-		this.player = new BasicPlayer();
-		this.StartClient();		
+		this.player = new BasicPlayer();	
 		initialize();
 		
 	}
@@ -80,7 +82,7 @@ public class client {
 		this.server = "localhost";
 		this.port = port;
 		path = null;
-		this.StartClient();
+		this.player = new BasicPlayer();
 		initialize();
 		
 	}
@@ -91,7 +93,7 @@ public class client {
 		this.server = server;
 		this.port = port;
 		path = null;
-		this.StartClient();
+		this.player = new BasicPlayer();
 		initialize();
 
 	}
@@ -173,9 +175,9 @@ public class client {
 		btnPlay.setActionCommand("play");
 		btnPlay.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				if(arg0.getActionCommand().equals("play"))
+				if(arg0.getActionCommand().equals("play") && player.isReady())
 					player.start();
-				else if(arg0.getActionCommand().equals("pause"))
+				else if(arg0.getActionCommand().equals("pause") && player.isReady())
 					player.stop();
 			}
 		});
@@ -208,7 +210,8 @@ public class client {
 			public void actionPerformed(ActionEvent arg0) {	
 				killTemp();
 				path = requestSong(list.getSelectedValue().toString());
-				player.changeTrack(path);
+				if(path != null)
+					player.changeTrack(path);
 			}
 		});
 		btnStart.setActionCommand("Start");
@@ -250,10 +253,10 @@ public class client {
 		frame.getContentPane().add(btnBack);
 		
 		txtServerAddress = new JTextField();
-		txtServerAddress.addMouseListener(new MouseAdapter() {
+		txtServerAddress.addFocusListener(new FocusAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent e) {
-				if(txtServerAddress.getText().equals("inserire l'indirizzo ip"))
+			public void focusGained(FocusEvent arg0) {
+				if(txtServerAddress.getText().equals("Inserire l'indirizzo ip"))
 					txtServerAddress.setText("");
 			}
 		});
@@ -266,10 +269,10 @@ public class client {
 		btnConnect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				server = txtServerAddress.getText();
-				if(server.equals("Inserire l'indirizzo ip"))
+				if(server.equals("Inserire l'indirizzo ip") || server.equals(""))
 					server = "localhost";
-				StartClient();
-				setConnectionsNeeded(list);
+				if(StartClient())
+					setConnectionsNeeded(list);
 			}
 		});
 		btnConnect.setBounds(306, 45, 128, 23);
@@ -277,9 +280,11 @@ public class client {
 	}
 	
 	
-	private void StartClient() {
+	private boolean StartClient() {
 
 		try {
+			if(this.connection != null)
+				closeConnection();
 			this.connection = new Socket(this.server, this.port);
 			System.out.println("connessione stabilita...");
 			receiver = new InputStreamReader(this.connection.getInputStream());
@@ -287,12 +292,13 @@ public class client {
 
 			out = this.connection.getOutputStream();
 			printer = new PrintWriter(out);
-
-		} catch (IOException e) {
+			return true;
+		} catch (Exception e) {
 			System.out.println(e);
 			
 		}
-
+		
+		return false;
 	}
 	
 	private boolean isArtist(String artist) {
@@ -442,18 +448,24 @@ public class client {
 	private String requestSong(String songName) {
 		try
 		{
-			printer.println("sendSong;"+songName);
-			printer.flush();
-			File song = new File(File.createTempFile(songName, ".tmp").getAbsolutePath());
-			byte[] bytes = new byte[4096];
-			FileOutputStream file = new FileOutputStream(song);
-			
-			while(connection.getInputStream().available() != 0) {
-				connection.getInputStream().read(bytes);
-				file.write(bytes);
+			if(isTrack(songName))
+			{
+				printer.println("sendSong;"+songName);
+				printer.flush();
+				File song = new File(File.createTempFile(songName, ".tmp").getAbsolutePath());
+				FileOutputStream file = new FileOutputStream(song);
+				DataInputStream dis = new DataInputStream(connection.getInputStream());
+				int len = dis.readInt();
+				byte[] data = new byte[len];
+				if(len > 0)
+					dis.readFully(data);
+				
+				file.write(data);
+				file.flush();
+				String absolutePath = song.getAbsolutePath();
+				file.close();
+				return absolutePath;
 			}
-			file.close();
-			return song.getAbsolutePath();
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -488,6 +500,7 @@ public class client {
 	
 	private void closeConnection() {
 		try {
+			killTemp();
 			this.printer.print("die");
 			this.printer.flush();
 			this.printer.close();
@@ -496,11 +509,10 @@ public class client {
 			this.buffer.close();
 			this.receiver.close();
 			this.connection.close();
-			killTemp();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
-			System.exit(-1);
+			//e.printStackTrace();
+			System.exit(0);
 		}
 		
 	}

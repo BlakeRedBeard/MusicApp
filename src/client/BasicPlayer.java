@@ -16,6 +16,7 @@ public class BasicPlayer {
 	
 	public BasicPlayer() {
 		JFXPanel starter = new JFXPanel();
+		this.mediaPlayer = null;
 	}
 	
 	public BasicPlayer(String path) {
@@ -56,6 +57,12 @@ public class BasicPlayer {
 	
 	public String getStatus() {
 		return this.mediaPlayer.getStatus().toString();
+	}
+	
+	public boolean isReady() {
+		if(this.mediaPlayer != null)
+			return true;
+		else return false;
 	}
 	
 	public static void main(String[] Args) throws InterruptedException {
