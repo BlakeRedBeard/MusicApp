@@ -30,6 +30,8 @@ import java.awt.event.ActionEvent;
 import javax.swing.JTextField;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.List;
+import javax.swing.JScrollPane;
 //TODO cancel the class from here and then replace it's calls into client
 public class client {
 
@@ -127,7 +129,19 @@ public class client {
 		}.setFrame(this);
 		frame.addWindowListener(exitListener);
 		frame.getContentPane().setLayout(null);
+		
+		JButton btnPre = new JButton("<<");
+		btnPre.setActionCommand("previous");
+		btnPre.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+			}
+		});
+		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(10, 11, 291, 148);
+		frame.getContentPane().add(scrollPane);
 		JList list = new JList();
+		scrollPane.setViewportView(list);
 		list.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -156,16 +170,6 @@ public class client {
 						});
 					
 				}
-			}
-		});
-		
-		list.setBounds(10, 11, 286, 148);
-		frame.getContentPane().add(list);
-		
-		JButton btnPre = new JButton("<<");
-		btnPre.setActionCommand("previous");
-		btnPre.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
 			}
 		});
 		btnPre.setBounds(10, 170, 89, 23);
@@ -205,7 +209,7 @@ public class client {
 		btnNext.setBounds(208, 170, 89, 23);
 		frame.getContentPane().add(btnNext);
 		
-		JButton btnStart = new JButton("Start Reproduction");
+		JButton btnStart = new JButton("Download Song");
 		btnStart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {	
 				killTemp();
@@ -516,5 +520,4 @@ public class client {
 		}
 		
 	}
-	
 }
