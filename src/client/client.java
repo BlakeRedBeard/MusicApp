@@ -3,6 +3,7 @@ package client;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.AbstractListModel;
@@ -22,6 +23,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Hashtable;
 import java.util.StringTokenizer;
 
 import javax.swing.JButton;
@@ -32,6 +34,18 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.List;
 import javax.swing.JScrollPane;
+import javax.swing.JSlider;
+import javax.swing.JSeparator;
+import javax.swing.SwingConstants;
+import java.awt.ComponentOrientation;
+import java.awt.event.InputMethodListener;
+import java.awt.event.InputMethodEvent;
+import javax.swing.event.AncestorListener;
+import javax.swing.event.AncestorEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ChangeEvent;
 //TODO cancel the class from here and then replace it's calls into client
 public class client {
 
@@ -44,10 +58,11 @@ public class client {
 	private BufferedReader  buffer; // buffer per lo stream del server
 
 	private OutputStream out; // stream di connessione con il server
-	private BasicPlayer player;
-	private PrintWriter printer;
-	private static String path;
-	private JTextField txtServerAddress;
+	private BasicPlayer player;	//lettore mp3
+	private PrintWriter printer;	//stampa nello stream di output
+	private static String path;		//percorso del file temporaneo
+	private JTextField txtServerAddress;	//indirizzo logico o fisico del server
+	private Thread time;
 	/**
 	 * Launch the application.
 	 */
@@ -105,7 +120,7 @@ public class client {
 	private void initialize() {
 		frame = new JFrame();
 		frame.setResizable(false);
-		frame.setBounds(100, 100, 450, 300);
+		frame.setBounds(100, 100, 500, 362);
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		WindowListener exitListener = new WindowAdapter() {
 			private client frame;
@@ -130,15 +145,8 @@ public class client {
 		frame.addWindowListener(exitListener);
 		frame.getContentPane().setLayout(null);
 		
-		JButton btnPre = new JButton("<<");
-		btnPre.setActionCommand("previous");
-		btnPre.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-			}
-		});
-		
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(10, 11, 291, 148);
+		scrollPane.setBounds(10, 11, 336, 175);
 		frame.getContentPane().add(scrollPane);
 		JList list = new JList();
 		scrollPane.setViewportView(list);
@@ -172,8 +180,6 @@ public class client {
 				}
 			}
 		});
-		btnPre.setBounds(10, 170, 89, 23);
-		frame.getContentPane().add(btnPre);
 		
 		JButton btnPlay = new JButton("\u25BA");
 		btnPlay.setActionCommand("play");
@@ -181,56 +187,62 @@ public class client {
 			public void actionPerformed(ActionEvent arg0) {
 				if(arg0.getActionCommand().equals("play") && player.isReady())
 					player.start();
-				else if(arg0.getActionCommand().equals("pause") && player.isReady())
-					player.stop();
-			}
-		});
-		btnPlay.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
+				else 
+					if(arg0.getActionCommand().equals("pause") && player.isReady())
+						player.pause();
+				
 				if(btnPlay.getText() == "\u25BA")
 				{
 					btnPlay.setText("\u2590 \u258C");
 					btnPlay.setActionCommand("pause");
 				}
-				else
-				if(btnPlay.getText() == "\u2590 \u258C")
-				{
-					btnPlay.setText("\u25BA");
-					btnPlay.setActionCommand("play");
-				}
+				else 
+					if(btnPlay.getText() == "\u2590 \u258C")
+					{
+						btnPlay.setText("\u25BA");
+						btnPlay.setActionCommand("play");
+					}
 			}
 		});
-		btnPlay.setBounds(109, 170, 89, 23);
+		btnPlay.setBounds(113, 264, 89, 23);
 		frame.getContentPane().add(btnPlay);
 		
-		JButton btnNext = new JButton(">>");
-		btnNext.setActionCommand("next");
-		btnNext.setBounds(208, 170, 89, 23);
-		frame.getContentPane().add(btnNext);
+
 		
 		JButton btnStart = new JButton("Download Song");
-		btnStart.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {	
-				killTemp();
-				path = requestSong(list.getSelectedValue().toString());
-				if(path != null)
-					player.changeTrack(path);
+		btnStart.setActionCommand("Start");
+		btnStart.setBounds(10, 298, 174, 23);
+		frame.getContentPane().add(btnStart);
+		
+		JButton btnPre = new JButton("<<");
+		btnPre.setActionCommand("previous");
+		btnPre.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				list.setSelectedIndex(list.getSelectedIndex()-1);
+				
+				btnStart.doClick();
+				player.start();
 			}
 		});
-		btnStart.setActionCommand("Start");
-		btnStart.setBounds(10, 204, 174, 23);
-		frame.getContentPane().add(btnStart);
+		btnPre.setBounds(10, 264, 89, 23);
+		frame.getContentPane().add(btnPre);
+		
+		JButton btnNext = new JButton(">>");
+		btnNext.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				list.setSelectedIndex(list.getSelectedIndex()+1);
+				
+				btnStart.doClick();
+				player.start();
+			}
+		});
+		btnNext.setActionCommand("next");
+		btnNext.setBounds(212, 264, 89, 23);
+		frame.getContentPane().add(btnNext);
 		
 		JButton btnBack = new JButton("back");
 		btnBack.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
-			}
-		});
-		btnBack.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
 				if(isAlbum(list.getModel().getElementAt(0).toString()))
 					list.setModel(new AbstractListModel() {
 						String[] values = getArtists();
@@ -253,7 +265,7 @@ public class client {
 					});
 			}
 		});
-		btnBack.setBounds(208, 204, 89, 23);
+		btnBack.setBounds(212, 298, 89, 23);
 		frame.getContentPane().add(btnBack);
 		
 		txtServerAddress = new JTextField();
@@ -265,7 +277,7 @@ public class client {
 			}
 		});
 		txtServerAddress.setText("Inserire l'indirizzo ip");
-		txtServerAddress.setBounds(306, 11, 128, 23);
+		txtServerAddress.setBounds(356, 9, 128, 23);
 		frame.getContentPane().add(txtServerAddress);
 		txtServerAddress.setColumns(10);
 		
@@ -279,8 +291,60 @@ public class client {
 					setConnectionsNeeded(list);
 			}
 		});
-		btnConnect.setBounds(306, 45, 128, 23);
+		btnConnect.setBounds(356, 43, 128, 23);
 		frame.getContentPane().add(btnConnect);
+		
+		JSlider slider = new JSlider();
+		slider.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+				player.setTime((double)slider.getValue()/100*player.getDuration());
+			}
+		});
+		slider.setPaintTicks(true);
+		slider.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+		slider.setBounds(10, 197, 291, 56);
+		slider.setMajorTickSpacing(50);
+		slider.setMinorTickSpacing(10);
+		slider.setPaintLabels(true);
+		slider.setLabelTable(null);
+		frame.getContentPane().add(slider);
+		
+		JSlider slider_1 = new JSlider();
+		slider_1.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent arg0) {
+				if(player != null)
+					player.setVolume(((double) slider_1.getValue())/100);
+			}
+		});
+		slider_1.setPaintLabels(true);
+		slider_1.setMinorTickSpacing(10);
+		slider_1.setMajorTickSpacing(50);
+		slider_1.setPaintTicks(true);
+		slider_1.setOrientation(SwingConstants.VERTICAL);
+		slider_1.setBounds(311, 197, 56, 124);
+		frame.getContentPane().add(slider_1);
+		
+		btnStart.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {	
+				killTemp();
+				path = requestSong(list.getSelectedValue().toString());
+				if(path != null)
+					player.changeTrack(path);
+				if(time != null) {
+					timeModifier.isAlive = false;
+					try {
+						Thread.sleep(200);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}}
+				
+				time = new Thread(new timeModifier(player, slider));
+				
+				time.start();
+			}
+		});
 	}
 	
 	
@@ -508,7 +572,7 @@ public class client {
 			this.printer.print("die");
 			this.printer.flush();
 			this.printer.close();
-		
+			
 			this.out.close();
 			this.buffer.close();
 			this.receiver.close();

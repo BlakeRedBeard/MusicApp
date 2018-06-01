@@ -7,6 +7,7 @@ import javafx.application.Application;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaPlayer.Status;
 import javafx.util.Duration;
 
 public class BasicPlayer {
@@ -27,36 +28,50 @@ public class BasicPlayer {
 	public void changeTrack(String path) {
 		this.path = path;
 		Media hit = new Media(new File(path).toURI().toString());
+		if(this.mediaPlayer != null)
+			if(this.mediaPlayer.getStatus() == Status.PLAYING)
+				this.mediaPlayer.stop();
+		
 		this.mediaPlayer = new MediaPlayer(hit);
+		this.mediaPlayer.setVolume(50);
 	}
 	
 	public void start() {
-		this.mediaPlayer.play();
+		if(this.mediaPlayer != null)
+			this.mediaPlayer.play();
 	}
 	
 	public void stop() {
-		this.mediaPlayer.setStartTime(Duration.minutes(this.getCurrentTime()));
-		this.mediaPlayer.stop();
+		if(this.mediaPlayer != null)
+			this.mediaPlayer.stop();
 	}
 	
 	public double getDuration() {
-		return this.mediaPlayer.getTotalDuration().toMinutes();
+		if(this.mediaPlayer != null)
+			return this.mediaPlayer.getTotalDuration().toMinutes();
+		return 0;
 	}
 	
 	public double getCurrentTime() {
-		return this.mediaPlayer.getCurrentTime().toMinutes();
+		if(this.mediaPlayer != null)
+			return this.mediaPlayer.getCurrentTime().toMinutes();
+		return 0;
 	}
 	
 	public void setVolume(double volume) {
-		this.mediaPlayer.setVolume(volume);
+		if(this.mediaPlayer != null)
+			this.mediaPlayer.setVolume(volume);
 	}
 	
 	public void pause() {
-		this.mediaPlayer.pause();
+		if(this.mediaPlayer != null)
+			this.mediaPlayer.pause();
 	}
 	
 	public String getStatus() {
-		return this.mediaPlayer.getStatus().toString();
+		if(this.mediaPlayer != null)
+			return this.mediaPlayer.getStatus().toString();
+		return null;
 	}
 	
 	public boolean isReady() {
@@ -65,6 +80,16 @@ public class BasicPlayer {
 		else return false;
 	}
 	
+	public void setTime(double time) {
+		if(this.mediaPlayer != null)
+		{
+			stop();
+			this.mediaPlayer.setStartTime(Duration.minutes(time));
+			start();
+		}
+	}
+	
+	/* JUST TESTING
 	public static void main(String[] Args) throws InterruptedException {
 		BasicPlayer player = new BasicPlayer("res/ilSolitoSesso.mp3");
 		player.start();
@@ -73,5 +98,5 @@ public class BasicPlayer {
 		scanner.nextLine();
 		player.stop();
 		
-	}
+	}*/
 }
