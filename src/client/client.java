@@ -118,7 +118,7 @@ public class client {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		frame = new JFrame();
+		frame = new JFrame("MusicApp Player");
 		frame.setResizable(false);
 		frame.setBounds(100, 100, 500, 362);
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -295,12 +295,13 @@ public class client {
 		frame.getContentPane().add(btnConnect);
 		
 		JSlider slider = new JSlider();
-		slider.addMouseListener(new MouseAdapter() {
+
+		/*slider.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent arg0) {
 				player.setTime((double)slider.getValue()/100*player.getDuration());
 			}
-		});
+		});*/
 		slider.setPaintTicks(true);
 		slider.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
 		slider.setBounds(10, 197, 291, 56);
