@@ -361,6 +361,7 @@ public class client {
 
 			out = this.connection.getOutputStream();
 			printer = new PrintWriter(out);
+			
 			return true;
 		} catch (Exception e) {
 			System.out.println(e);
