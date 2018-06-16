@@ -48,7 +48,7 @@ public class timeModifier implements Runnable {
 			slider.setValue((int)(this.player.getCurrentTime()/duration*100));
 			
 			try {
-				Thread.sleep(500);
+				Thread.sleep(100);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

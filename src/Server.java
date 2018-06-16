@@ -248,7 +248,7 @@ public class Server implements Runnable{
 			{
 				this.connection = this.serverSocket.accept();	//accept the connection request
 				
-				this.isAlive = true;
+				this.clientIsAlive = true;
 				inputStream = new InputStreamReader(this.connection.getInputStream());	//input stream connected with client
 				buffer = new BufferedReader(inputStream);
 				
@@ -258,15 +258,14 @@ public class Server implements Runnable{
 				{
 					message = buffer.readLine();	//waits for the command to be performed
 					StringTokenizer stkn = null;
+					System.out.println("messaggio - "+message);
 					if(message != null)
 						stkn = new StringTokenizer(message, ";");
-					if(stkn.hasMoreTokens() || stkn != null)
+					if(stkn != null && stkn.hasMoreTokens())
 					{
 						switch (stkn.nextToken().toLowerCase()) {
 						case "die":
-							this.isAlive = false;
-							printer.println("I'm dead right now");
-							printer.flush();
+							this.clientIsAlive = false;
 							break;
 	
 						case "isartist":
@@ -348,8 +347,8 @@ public class Server implements Runnable{
 				// TODO Auto-generated catch block
 				System.out.println(e.getMessage());
 				e1.printStackTrace();
-				Thread t1 = new Thread(new Server(System.out, this.isAlive, this.clientIsAlive));
-				t1.start();
+				/*Thread t1 = new Thread(new Server(System.out, this.isAlive, this.clientIsAlive));
+				t1.start();*/
 			}
 			
 		}		
@@ -357,8 +356,8 @@ public class Server implements Runnable{
 		{
 			System.out.println(e.getMessage());
 			e.printStackTrace();
-			Thread t1 = new Thread(new Server(System.out, this.isAlive, this.clientIsAlive));
-			t1.start();
+			/*Thread t1 = new Thread(new Server(System.out, this.isAlive, this.clientIsAlive));
+			t1.start();*/
 		}
 		
 	}
